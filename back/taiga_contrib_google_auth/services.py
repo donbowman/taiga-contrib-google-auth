@@ -27,6 +27,8 @@ from taiga.base import exceptions as exc
 from taiga.auth.services import send_register_email
 from taiga.auth.services import make_auth_response_data, get_membership_by_token
 from taiga.auth.signals import user_registered as user_registered_signal
+from taiga.base.connectors.exceptions import ConnectorBaseException
+
 
 from . import connector
 
