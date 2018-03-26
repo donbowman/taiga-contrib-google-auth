@@ -59,8 +59,7 @@ GoogleLoginButtonDirective = ($window, $params, $location, $config, $events, $co
             if response.data._error_message
                 $confirm.notify("light-error", response.data._error_message )
             else
-                $confirm.notify("light-error", "Our Oompa Loompas have not been able to get you
-                                                credentials from Google.")  #TODO: i18n
+                $confirm.notify("light-error", "Error fetching credentials from Google.")
 
         loginWithGoogleAccount = ->
             type = $params.state
@@ -98,6 +97,6 @@ GoogleLoginButtonDirective = ($window, $params, $location, $config, $events, $co
     }
 
 module = angular.module('taigaContrib.googleAuth', [])
-module.directive("tggoogleLoginButton", ["$window", '$routeParams', "$tgLocation", "$tgConfig", "$tgEvents",
+module.directive("tgGoogleLoginButton", ["$window", '$routeParams', "$tgLocation", "$tgConfig", "$tgEvents",
                                          "$tgConfirm", "$tgAuth", "$tgNavUrls", "tgLoader",
                                          GoogleLoginButtonDirective])
