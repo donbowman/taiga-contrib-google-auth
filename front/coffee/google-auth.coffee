@@ -100,4 +100,4 @@ GoogleLoginButtonDirective = ($window, $params, $location, $config, $events, $co
 module = angular.module('taigaContrib.googleAuth', [])
 module.directive("tggoogleLoginButton", ["$window", '$routeParams', "$tgLocation", "$tgConfig", "$tgEvents",
                                          "$tgConfirm", "$tgAuth", "$tgNavUrls", "tgLoader",
-                                         googleLoginButtonDirective])
+                                         GoogleLoginButtonDirective])
