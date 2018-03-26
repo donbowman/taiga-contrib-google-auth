@@ -21,6 +21,7 @@ from django.db import IntegrityError
 from django.utils.translation import ugettext as _
 
 from django.apps import apps
+from django.conf import settings
 
 from taiga.base.utils.slug import slugify_uniquely
 from taiga.base import exceptions as exc
