@@ -5,7 +5,7 @@ import versiontools_support
 from setuptools import setup, find_packages
 
 setup(
-    name = 'taiga-contrib-google-auth-official',
+    name = 'taiga-contrib-google-auth',
     version = ":versiontools:taiga_contrib_google_auth:",
     description = "The Taiga plugin for google authentication",
     long_description = "",
