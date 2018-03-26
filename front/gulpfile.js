@@ -39,7 +39,6 @@ gulp.task('compile', function() {
 
     return merge(jade, coffee)
         .pipe($.concat('google-auth.js'))
-        .pipe($.uglify({mangle:false, preserveComments: false}))
         .pipe(gulp.dest(paths.dist));
 });
 
