@@ -16,11 +16,26 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# See 
+# https://developers.google.com/oauthplayground/
+
 import requests
+
+import logging
+#from http.client import HTTPConnection
+#HTTPConnection.debuglevel = 1
+#logging.basicConfig()
+#logging.getLogger().setLevel(logging.DEBUG)
+#req_log = logging.getLogger('requests.packages.urllib3')
+#req_log.setLevel(logging.DEBUG)
+#req_log.propagate = True
+
 import json
+import jwt
 
 from collections import namedtuple
 from urllib.parse import urljoin
+from urllib.parse import quote_plus
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
@@ -44,14 +59,13 @@ REDIRECT_URI = getattr(settings, "GOOGLE_API_REDIRECT_URI", None)
 URL = getattr(settings, "GOOGLE_API_URL",  "https://www.googleapis.com/")
 API_RESOURCES_URLS = {
     "login": {
-        "access-token": "oauth2/v3/token"
+        "access-token": "oauth2/v4/token"
     },
-    "user": {
-        "profile": "oauth2/v1/userinfo"
-    }
 }
 
-HEADERS = {"Accept": "application/json",}
+HEADERS = {"Accept": "application/json",
+           "user-agent": "taiga-google-auth",
+          }
 
 AuthInfo = namedtuple("AuthInfo", ["access_token"])
 User = namedtuple("User", ["id", "username", "full_name", "email", "bio"])
@@ -90,11 +104,11 @@ def _get(url:str, headers:dict) -> dict:
     return data
 
 
-def _post(url:str, params:dict, headers:dict) -> dict:
+def _post(url:str, data:dict, headers:dict) -> dict:
     """
     Make a POST call.
     """
-    response = requests.post(url, params=params, headers=headers)
+    response = requests.post(url, data=data, headers=headers)
 
     data = response.json()
     if response.status_code != 200 or "error" in data:
@@ -111,26 +125,29 @@ def login(access_code:str, client_id:str=CLIENT_ID, client_secret:str=CLIENT_SEC
           headers:dict=HEADERS, redirect_uri:str=REDIRECT_URI):
     """
     Get access_token fron an user authorized code, the client id and the client secret key.
-    (See https://developer.google.com/v3/oauth/#web-application-flow).
+    (See https://developer.google.com/v4/oauth/#web-application-flow).
     """
     if not CLIENT_ID or not CLIENT_SECRET:
         raise GoogleApiError({"error_message": _("Login with google account is disabled.")})
 
     url = _build_url("login", "access-token")
-    params={"code": access_code,
-            "client_id": client_id,
-            "client_secret": client_secret,
-            "grant_type": "authorization_code",
-            "redirect_uri": redirect_uri}
-    data = _post(url, params=params, headers=headers)
-    return AuthInfo(access_token=data.get("access_token", None))
+    # code=4%2FAACKrKggdEuKriXuoE8KjT7nVedo30lPEjThowNpS1Sff3jFOxnLOIeqVwb2xtLKjaHHsdmbBBfLu_YpJUVyAYo&redirect_uri=https%3A%2F%2Fdevelopers.google.com%2Foauthplayground&client_id=407408718192.apps.googleusercontent.com&client_secret=************&scope=&grant_type=authorization_code
 
-def get_user_profile(headers:dict=HEADERS):
+    params={"code": access_code,
+            "client_secret": client_secret,
+            "scope": "openid email profile",
+            "grant_type": "authorization_code",
+            "redirect_uri": "https://kanban.donbowman.ca/login", #redirect_uri,
+            "client_id": client_id,
+            }
+    data = _post(url, data=params, headers=headers)
+    return data.get("id_token", None)
+
+def get_user_profile(token):
     """
-    Get authenticated user info.
-    (See https://developer.google.com/v3/users/#get-the-authenticated-user).
+    Take a JWT token and get the user info
     """
-    url = _build_url("user", "profile")
+
     data = _get(url, headers=headers)
     return User(id=data.get("id", None),
                 username=data.get("name", None).get("givenName", None) + data.get("name", None).get("familyName", None),
@@ -159,15 +176,10 @@ def me(access_code:str) -> tuple:
     """
     Connect to a google account and get all personal info (profile and the primary email).
     """
-    auth_info = login(access_code)
+    idt = login(access_code)
 
-    headers = HEADERS.copy()
-    headers["Authorization"] = "Bearer {}".format(auth_info.access_token)
+    profile = jwt.decode(idt, verify=False)
 
-    user = get_user_profile(headers=headers)
-    # emails = get_user_emails(headers=headers)
+    return User(id=profile['email'].split("@")[0],username=profile['email'].split("@")[0],full_name= "",email=profile['email'],bio= "")
 
-    # primary_email = next(filter(lambda x: x.is_primary, emails))
-    # return primary_email.email, user
-    return user
 

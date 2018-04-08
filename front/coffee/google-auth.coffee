@@ -25,7 +25,7 @@
 
 GoogleLoginButtonDirective = ($window, $params, $location, $config, $events, $confirm,
                               $auth, $navUrls, $loader) ->
-    # Login or registar a user with his/her Google account.
+    # Login or registar a user with his/her google account.
     #
     # Example:
     #     tg-google-login-button()
@@ -59,7 +59,7 @@ GoogleLoginButtonDirective = ($window, $params, $location, $config, $events, $co
             if response.data._error_message
                 $confirm.notify("light-error", response.data._error_message )
             else
-                $confirm.notify("light-error", "Error fetching credentials from Google.")
+                $confirm.notify("light-error", "Error obtaining credentials from Google.")
 
         loginWithGoogleAccount = ->
             type = $params.state
