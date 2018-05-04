@@ -131,13 +131,13 @@ def login(access_code:str, client_id:str=CLIENT_ID, client_secret:str=CLIENT_SEC
         raise GoogleApiError({"error_message": _("Login with google account is disabled.")})
 
     url = _build_url("login", "access-token")
-    # code=4%2FAACKrKggdEuKriXuoE8KjT7nVedo30lPEjThowNpS1Sff3jFOxnLOIeqVwb2xtLKjaHHsdmbBBfLu_YpJUVyAYo&redirect_uri=https%3A%2F%2Fdevelopers.google.com%2Foauthplayground&client_id=407408718192.apps.googleusercontent.com&client_secret=************&scope=&grant_type=authorization_code
+    # code=4%2FAACKrKXXXXXXXXXXXXXXjT7nVedo30lPEjThowNpS1Sff3jFOxnLOIeqVwb2xtLKjaHHsdmbBBfLu_YpJUVyAYo&redirect_uri=https%3A%2F%2Fdevelopers.google.com%2Foauthplayground&client_id=407408718192.apps.googleusercontent.com&client_secret=************&scope=&grant_type=authorization_code
 
     params={"code": access_code,
             "client_secret": client_secret,
             "scope": "openid email profile",
             "grant_type": "authorization_code",
-            "redirect_uri": "https://kanban.donbowman.ca/login", #redirect_uri,
+            "redirect_uri": "redirect_uri"
             "client_id": client_id,
             }
     data = _post(url, data=params, headers=headers)
