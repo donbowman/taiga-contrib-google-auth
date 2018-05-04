@@ -137,7 +137,7 @@ def login(access_code:str, client_id:str=CLIENT_ID, client_secret:str=CLIENT_SEC
             "client_secret": client_secret,
             "scope": "openid email profile",
             "grant_type": "authorization_code",
-            "redirect_uri": "redirect_uri"
+            "redirect_uri": "redirect_uri",
             "client_id": client_id,
             }
     data = _post(url, data=params, headers=headers)
